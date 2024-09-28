@@ -1,6 +1,21 @@
 
 
 chrome.contextMenus.removeAll();
+
+
+chrome.contextMenus.create({
+    title: "Shitpost Smart Cache link",
+    id: "smartcachelink",
+    contexts: ["link"]
+});
+
+
+chrome.contextMenus.create({
+    title: "Shitpost Smart Cache page",
+    id: "smartcachepage",
+    contexts: ["page"]
+});
+
 chrome.contextMenus.create({
       title: "Shitpost Image (cache)",
       id: "image",
@@ -35,6 +50,18 @@ async function genericOnClick(info) {
     case "preview": {
         console.log("would shitpost preview " + info.pageUrl)
         await doShitpostPreview(info.pageUrl);
+        break;
+    }
+    case "smartcachelink": {
+        console.dir(info);
+        const url = info.linkUrl;
+        await doShitpostSmartCache(url);
+        break;
+    }
+    case "smartcachepage": {
+        console.dir(info);
+        const url = info.pageUrl;
+        await doShitpostSmartCache(url);
         break;
     }
     case "image": {
@@ -112,6 +139,22 @@ async function doShitpostCache(url){
 }
 
 
+async function doShitpostSmartCache(url){
+    var apikey = await getApiKey();
+    if (apikey)
+    {
+        var callUrl = "https://api.shitpost.sh/" + apikey + "/smartcache/" + url;
+
+        const response = await fetch(callUrl);
+        if (response.ok)
+        {
+            const txt = await response.text();
+            console.log(txt);
+            await addToClipboard(txt);
+        }
+
+    }
+}
 
 
 
